@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{% block title %}Linbook{% endblock %}</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* --- Facebook 核心變數 --- */
+      :root {
+          --bg-color: #F0F2F5;
+          --card-bg: #FFFFFF;
+          --text-main: #050505;
+          --text-sec: #65676B;
+          --fb-blue: #1877F2;
+          --divider: #CED0D4;
+          --btn-gray: #E4E6EB;
+          --btn-gray-hover: #D8DADF;
+      }
+
+      body {
+          background-color: var(--bg-color);
+          font-family: Helvetica, Arial, sans-serif; /* FB 經典字體 */
+          margin: 0;
+          color: var(--text-main);
+          overflow-y: scroll;
+          min-width: 1000px; /* 強制桌面版寬度，適合報告展示 */
+      }
+
+      a { text-decoration: none; color: inherit; }
+
+      /* --- 頂部導航欄 (Navbar) --- */
+      .fb-nav {
+          background: var(--card-bg);
+          height: 56px;
+          box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+          position: sticky;
+          top: 0;
+          z-index: 999;
+          display: flex;
+          justify-content: space-between;
+          padding: 0 16px;
+          align-items: center;
+      }
+      .fb-logo { font-size: 40px; color: var(--fb-blue); margin-right: 10px; }
+      .search-bar {
+          background: var(--bg-color);
+          border-radius: 50px;
+          padding: 10px 16px;
+          color: var(--text-sec);
+          width: 240px;
+          font-size: 15px;
+      }
+
+      .nav-icons {
+        display: flex;
+        justify-content: center;
+      }
+      .nav-icons div {
+          width: 40px; height: 40px;
+          background: var(--btn-gray);
+          border-radius: 50%;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          margin-left: 8px;
+          font-size: 18px;
+          cursor: pointer;
+      }
+
+      /* --- 個人檔案頂部 (Header) --- */
+      .profile-header-wrapper { background: var(--card-bg); box-shadow: 0 1px 2px rgba(0,0,0,0.1); padding-bottom: 4px; }
+      .header-content { max-width: 940px; margin: 0 auto; }
+
+      /* 封面 */
+      .cover-photo {
+          height: 350px;
+          background: #777 url('{{ profile.cover_photo.url }}') center/cover no-repeat;
+          border-bottom-left-radius: 8px;
+          border-bottom-right-radius: 8px;
+          position: relative;
+      }
+
+      /* 頭像與名字 */
+      .profile-section {
+          padding: 0 32px;
+          position: relative;
+          display: flex;
+          align-items: flex-end;
+          margin-bottom: 20px;
+      }
+      .profile-pic-container { margin-top: -30px; margin-right: 20px; position: relative; }
+      .profile-pic {
+          width: 168px; height: 168px;
+          border-radius: 50%;
+          border: 5px solid var(--card-bg);
+          background: #fff;
+          object-fit: cover;
+      }
+      .name-section { margin-bottom: 15px; flex: 1; }
+      .user-name { font-size: 32px; font-weight: 800; margin: 0; }
+      .friends-count { color: var(--text-sec); font-weight: 600; font-size: 15px; margin-top: 5px;}
+
+      /* 按鈕群 */
+      .action-buttons { display: flex; gap: 8px; margin-bottom: 15px; }
+      .btn-blue { background: var(--fb-blue); color: white; border: none; padding: 0 12px; height: 36px; border-radius: 6px; font-weight: 600; font-size: 15px; cursor: pointer; display: flex; align-items: center; }
+      .btn-gray { background: var(--btn-gray); color: var(--text-main); border: none; padding: 0 12px; height: 36px; border-radius: 6px; font-weight: 600; font-size: 15px; cursor: pointer; display: flex; align-items: center;}
+
+      /* 分頁選單 (Menu Tabs) */
+      .menu-tabs {
+          max-width: 900px; margin: 0 auto;
+          border-top: 1px solid var(--divider);
+          display: flex;
+          align-items: center;
+          height: 60px;
+          padding: 0 16px;
+      }
+      .tab-item {
+          padding: 16px;
+          font-weight: 600;
+          color: var(--text-sec);
+          cursor: pointer;
+          position: relative;
+      }
+      .tab-item.active { color: var(--fb-blue); }
+      .tab-item.active::after {
+          content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: var(--fb-blue);
+      }
+      /* 管理員按鈕 */
+      .admin-float { position: fixed; bottom: 30px; right: 30px; }
+    </style>
+    {% block extra_css %}{% endblock %}
+  </head>
+  <body>
+    <nav class="fb-nav">
+      <div style="display: flex; align-items: center">
+        <div class="search-bar"><i class="fas fa-search"></i> 搜尋</div>
+      </div>
+
+      <div style="display: flex; gap: 40px; font-size: 24px; color: var(--text-sec);">
+        <i class="fas fa-home" style="color: var(--fb-blue);"></i>
+      </div>
+
+      <div class="nav-icons" style="">
+        <div><i class="fas fa-bars"></i></div>
+        <div><i class="fab fa-facebook-messenger"></i></div>
+        <div><i class="fas fa-bell"></i></div>
+        <img src="{% if user.is_staff and profile.avatar %}{{ profile.avatar.url }}{% else %}media/friends/default_avatar.png{% endif %}"
+          style="width: 40px; height: 40px; border-radius: 50%; margin-left: 8px; object-fit: cover;"/>
+      </div>
+
+    </nav>
+
+    <div class="profile-header-wrapper">
+      <div class="header-content">
+        <div class="cover-photo">
+          {% if user.is_staff %}
+          <button class="btn-gray" style="position: absolute; bottom: 20px; right: 30px">
+            <i class="fas fa-camera" style="margin-right: 5px"></i> 編輯封面相片
+          </button>
+          {% endif %}
+        </div>
+
+        <div class="profile-section">
+          <div class="profile-pic-container">
+            <img src="{{ profile.avatar.url }}" class="profile-pic" />
+            {% if user.is_staff %}
+            <div
+              style="
+                position: absolute;
+                bottom: 10px;
+                right: 0;
+                background: #e4e6eb;
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 3px solid #fff;
+              "
+            >
+              <i class="fas fa-camera"></i>
+            </div>
+            {% endif %}
+          </div>
+          <div class="name-section">
+            <h1 class="user-name">{{ profile.name }}</h1>
+            <p class="friends-count">{{ friends_amount }} 位朋友</p>
+          </div>
+          <div class="action-buttons">
+            <button class="btn-gray">
+              <i class="fab fa-facebook-messenger" style="margin-right: 5px"></i>
+              傳送訊息
+            </button>
+          </div>
+        </div>
+
+        <div class="menu-tabs">
+          <a href="{% url 'linbook:profile' %}" class="tab-item {% if active_tab == 'posts' %}active{% endif %}">貼文</a>
+          <a href="{% url 'linbook:about' %}" class="tab-item {% if active_tab == 'about' %}active{% endif %}">關於</a>
+          <a href="{% url 'linbook:friends' %}" class="tab-item {% if active_tab == 'friends' %}active{% endif %}">朋友</a>
+          <a href="{% url 'linbook:media' %}" class="tab-item {% if active_tab == 'media' %}active{% endif %}">媒體</a>
+          {% comment %} <div class="tab-item">影片</div> {% endcomment %}
+          <div style="flex: 1"></div>
+        </div>
+      </div>
+    </div>
+
+    {% block content %}{% endblock %}
+
+    {% if user.is_staff %}
+    <a href="/admin" class="admin-float"><i class="fas fa-cog"></i></a>
+    {% endif %}
+  </body>
+</html>

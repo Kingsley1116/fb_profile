@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block title %}媒體 | {{ profile.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .main-container { max-width: 940px; margin: 20px auto; display: block; padding: 0 16px; }
+    
+    /* 媒體網格共用樣式 */
+    .media-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 16px; }
+    
+    /* 相片項目 */
+    .photo-item { aspect-ratio: 1/1; overflow: hidden; background: #f0f2f5; border-radius: 8px; cursor: pointer; }
+    .photo-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.2s; }
+    .photo-item:hover img { transform: scale(1.05); }
+
+    /* 影片項目：增加播放圖示疊加 */
+    .video-item { 
+        aspect-ratio: 1/1; overflow: hidden; background: #000; border-radius: 8px; 
+        cursor: pointer; position: relative; 
+    }
+    .video-item video { width: 100%; height: 100%; object-fit: cover; }
+    .video-overlay {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center;
+        transition: background 0.3s;
+    }
+    .video-overlay i { color: white; font-size: 40px; opacity: 0.9; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+    .video-item:hover .video-overlay { background: rgba(0,0,0,0.4); }
+
+    /* 分頁標籤樣式 */
+    .media-tab { padding-bottom: 10px; cursor: pointer; color: var(--text-sec); border-bottom: 3px solid transparent; transition: 0.2s; }
+    .media-tab.active { color: var(--fb-blue); border-bottom-color: var(--fb-blue); }
+
+    /* 模態框 (Modal) 強化 */
+    .photo-modal {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background-color: rgba(0, 0, 0, 0.9); display: none;
+        justify-content: center; align-items: center; z-index: 1000; padding: 20px;
+    }
+    .photo-modal.active { display: flex; }
+    .modal-content { max-width: 90%; max-height: 90%; position: relative; display: flex; justify-content: center; }
+    .modal-content img, .modal-content video { max-width: 100%; max-height: 85vh; border-radius: 8px; }
+    .close-modal { position: absolute; top: -45px; right: 0; color: white; font-size: 35px; cursor: pointer; background: none; border: none; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-container">
+    <div class="fb-card">
+        <h3 style="margin:0; font-size:20px; font-weight:700;">媒體</h3>
+        
+        <div style="margin-top:16px; display:flex; gap:30px; font-weight:600; border-bottom:1px solid #CED0D4;">
+            <div id="tab-photos" class="media-tab active">相片</div>
+            <div id="tab-videos" class="media-tab">影片</div>
+        </div>
+
+        <div id="section-photos" class="media-grid">
+            {% for photo in photos %}
+            <div class="photo-item">
+                <img src="{{ photo.image.url }}" title="{{ photo.caption }}">
+            </div>
+            {% empty %}
+            <p style="grid-column: span 5; padding:40px; text-align:center; color:var(--text-sec);">尚無相片。</p>
+            {% endfor %}
+        </div>
+
+        <div id="section-videos" class="media-grid" style="display: none;">
+            {% for video in videos %}
+            <div class="video-item">
+                <video src="{{ video.file.url }}"></video>
+                <div class="video-overlay">
+                    <i class="fas fa-play-circle"></i>
+                </div>
+            </div>
+            {% empty %}
+            <p style="grid-column: span 5; padding:40px; text-align:center; color:var(--text-sec);">尚無影片。</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="photo-modal" id="mediaModal">
+    <div class="modal-content">
+        <button class="close-modal" id="closeModal">&times;</button>
+        <div id="modal-body"></div>
+    </div>
+</div>
+
+<script>
+    // --- 1. 分頁切換邏輯 ---
+    const tabPhotos = document.getElementById('tab-photos');
+    const tabVideos = document.getElementById('tab-videos');
+    const secPhotos = document.getElementById('section-photos');
+    const secVideos = document.getElementById('section-videos');
+
+    tabPhotos.onclick = () => {
+        tabPhotos.classList.add('active');
+        tabVideos.classList.remove('active');
+        secPhotos.style.display = 'grid';
+        secVideos.style.display = 'none';
+    };
+
+    tabVideos.onclick = () => {
+        tabVideos.classList.add('active');
+        tabPhotos.classList.remove('active');
+        secVideos.style.display = 'grid';
+        secPhotos.style.display = 'none';
+    };
+
+    // --- 2. 預覽模態框邏輯 ---
+    const modal = document.getElementById('mediaModal');
+    const modalBody = document.getElementById('modal-body');
+    const closeModal = document.getElementById('closeModal');
+
+    // 處理相片點擊
+    document.querySelectorAll('.photo-item img').forEach(img => {
+        img.onclick = () => {
+            modalBody.innerHTML = `<img src="${img.src}" style="max-width:100%">`;
+            openModal();
+        };
+    });
+
+    // 處理影片點擊
+    document.querySelectorAll('.video-item').forEach(item => {
+        item.onclick = () => {
+            const videoSrc = item.querySelector('video').src;
+            modalBody.innerHTML = `<video src="${videoSrc}" controls autoplay style="width:100%"></video>`;
+            openModal();
+        };
+    });
+
+    function openModal() {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function hideModal() {
+        modal.classList.remove('active');
+        modalBody.innerHTML = ''; // 清空內容以停止影片播放
+        document.body.style.overflow = 'auto';
+    }
+
+    closeModal.onclick = hideModal;
+    modal.onclick = (e) => { if (e.target === modal) hideModal(); };
+    document.onkeydown = (e) => { if (e.key === 'Escape') hideModal(); };
+</script>
+{% endblock %}

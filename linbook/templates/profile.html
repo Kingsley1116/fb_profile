@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+
+{% block title %}主頁 | {{ profile.name }}{% endblock %}
+{% block extra_css %}
+<style>
+/* --- 下方兩欄佈局 --- */
+    .main-container {
+        max-width: 940px; margin: 20px auto;
+        display: grid;
+        grid-template-columns: 360px 1fr; /* 左窄右寬 */
+        gap: 16px;
+        padding: 0 16px;
+    }
+
+    /* 卡片通用樣式 */
+    .fb-card {
+        background: var(--card-bg);
+        border-radius: 8px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        padding: 16px;
+        margin-bottom: 16px;
+    }
+    .card-title { font-size: 20px; font-weight: 700; margin-bottom: 12px; display: flex; justify-content: space-between; }
+    .link-text { color: var(--fb-blue); font-size: 15px; font-weight: normal; cursor: pointer; }
+
+    /* 左側：簡介與相片 */
+    .intro-item { display: flex; align-items: center; margin-bottom: 15px; color: var(--text-main); font-size: 15px; }
+    .intro-item i { width: 24px; color: #8C939D; margin-right: 10px; font-size: 20px; text-align: center; }
+
+    .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; border-radius: 8px; overflow: hidden; }
+    .mini-photo { width: 100%; aspect-ratio: 1/1; background: #ddd; object-fit: cover; }
+
+    /* 右側：發文框 */
+    .create-post { display: flex; align-items: center; padding-bottom: 10px; border-bottom: 1px solid var(--bg-color); }
+    .post-input {
+        background: var(--bg-color);
+        border-radius: 20px;
+        padding: 8px 12px;
+        margin-left: 10px;
+        flex-grow: 1;
+        color: var(--text-sec);
+        font-size: 15px;
+        cursor: pointer;
+    }
+    .post-actions { display: flex; justify-content: space-around; margin-top: 12px; }
+    .action-btn { font-weight: 600; color: var(--text-sec); font-size: 14px; background: none; border: none; display: flex; align-items: center; gap: 8px;}
+
+    /* 右側：貼文流 */
+    .post-header { display: flex; align-items: center; margin-bottom: 12px; }
+    .post-info h4 { font-size: 15px; margin: 0; font-weight: 600; }
+    .post-info span { font-size: 13px; color: var(--text-sec); }
+    .post-content { font-size: 15px; margin-bottom: 12px; line-height: 1.4; }
+    .post-image { width: calc(100% + 32px); margin-left: -16px; display: block; }
+    .post-stats { display: flex; justify-content: space-between; color: var(--text-sec); font-size: 14px; padding: 10px 0; border-bottom: 1px solid var(--divider); }
+    .post-footer { display: flex; justify-content: space-around; padding-top: 4px; }
+    .footer-btn { flex: 1; background: none; border: none; padding: 8px; border-radius: 4px; font-weight: 600; color: var(--text-sec); cursor: pointer; }
+    .footer-btn:hover { background: var(--bg-color); }
+
+</style>
+{% endblock extra_css %}
+
+{% block content %}
+<div class="main-container">
+    
+    <div class="left-col">
+        <div class="fb-card">
+            <h3 class="card-title">簡介</h3>
+            <p style="text-align:center; margin-bottom:20px;">{{ profile.bio }}</p>
+            <div class="intro-item"><i class="fas fa-briefcase"></i> <span>任職於 <strong>大清帝國</strong></span></div>
+            <div class="intro-item"><i class="fas fa-graduation-cap"></i> <span>就讀 <strong>嘉慶進士</strong></span></div>
+            <div class="intro-item"><i class="fas fa-home"></i> <span>住在 <strong>福建省侯官縣</strong></span></div>
+            <div class="intro-item"><i class="fas fa-map-marker-alt"></i> <span>來自 <strong>福州</strong></span></div>
+            {% comment %} <button class="btn-gray" style="width:100%; justify-content:center; margin-top:10px;">編輯詳細資料</button>
+            <button class="btn-gray" style="width:100%; justify-content:center; margin-top:10px;">新增興趣</button> {% endcomment %}
+        </div>
+
+        <div class="fb-card">
+            <h3 class="card-title">相片 <a href="{% url 'linbook:media' %}" class="link-text">查看全部相片</a></h3>
+            <div class="photo-grid">
+                {% for photo in photos %}
+                <img src="{{ photo.image.url }}" class="mini-photo">
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="fb-card">
+            <h3 class="card-title">朋友 <a href="{% url 'linbook:friends' %}" class="link-text">查看所有朋友</a></h3>
+            <div style="font-size:14px; color:var(--text-sec); margin-top:-10px; margin-bottom:15px;">{{ friends_amount}} 位朋友</div>
+            <div class="photo-grid">
+                
+                {% for friend in friends %}
+                <div>
+                    <img class="mini-photo" src="{{ friend.avatar.url }}" />
+                    <div style="font-size:12px; font-weight:600; margin-top:4px;">{{ friend.name }}</div>
+                </div>
+                {% endfor %}
+
+            </div>
+        </div>
+    </div>
+
+    <div class="right-col">
+        {% comment %} {% if user.is_staff %}
+        <div class="fb-card">
+            <div class="create-post">
+                <img src="{{ profile.avatar.url }}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
+                <div class="post-input">林則徐，你在想什麼？</div>
+            </div>
+            
+            <div class="post-actions">
+                <a href="{% url 'linbook:media' %}" class="action-btn"><i class="fas fa-images" style="color:#45BD62; font-size:24px;"></i> 相片/影片</a>
+                <a class="action-btn"><i class="fas fa-flag" style="color:#F7B928; font-size:24px;"></i> 生活要事</a>
+            </div>
+        </div>
+        {% endif %} {% endcomment %}
+
+        {% for post in posts %}
+        <div class="fb-card">
+            <div class="post-header">
+                <img src="{{ profile.avatar.url }}" style="width:40px; height:40px; border-radius:50%; margin-right:10px; object-fit:cover;">
+                <div class="post-info">
+                    <h4>{{ profile.name }}</h4>
+                    <span>{{ post.created_at|date:"n月j日" }} · <i class="fas fa-globe-americas"></i></span>
+                </div>
+            </div>
+            
+            <div class="post-content">{{ post.content }}</div>
+            
+            {% if post.image %}
+                <img src="{{ post.image.url }}" class="post-image">
+            {% endif %}
+            
+            <div class="post-stats">
+                <div style="display:flex; align-items:center;">
+                    <span style="background:#1877F2; color:white; border-radius:50%; padding:4px; font-size:10px; margin-right:4px;"><i class="fas fa-thumbs-up"></i></span>
+                    {{ post.likes_count }}
+                </div>
+                <div>{{ post.comments_count }} 則留言 {{ post.shares_count }} 次分享</div>
+            </div>
+            
+            <div class="post-footer">
+                <button class="footer-btn"><i class="far fa-thumbs-up"></i> 讚</button>
+                <button class="footer-btn"><i class="far fa-comment-alt"></i> 留言</button>
+                <button class="footer-btn"><i class="fas fa-share"></i> 分享</button>
+            </div>
+        </div>
+        {% empty %}
+        <div class="fb-card" style="text-align:center; padding:40px;">
+            <p>目前還沒有動態貼文。</p>
+        </div>
+        {% endfor %}
+
+    </div>
+</div>
+{% endblock content %}

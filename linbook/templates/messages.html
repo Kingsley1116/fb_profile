@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}訊息 | {{ profile.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .messenger-container {
+        max-width: 1200px; margin: 20px auto;
+        height: calc(100vh - 100px);
+        display: flex; background: white;
+        border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    /* 左側好友列表 */
+    .chat-sidebar {
+        width: 360px; border-right: 1px solid var(--divider);
+        display: flex; flex-direction: column;
+    }
+    .sidebar-header { padding: 16px; font-size: 24px; font-weight: 800; }
+    .chat-list { flex: 1; overflow-y: auto; }
+    .chat-item {
+        display: flex; align-items: center; padding: 12px 16px;
+        cursor: pointer; transition: 0.2s;
+    }
+    .chat-item:hover { background: var(--bg-color); }
+    .chat-item.active { background: #E7F3FF; }
+    .chat-avatar { width: 48px; height: 48px; border-radius: 50%; margin-right: 12px; }
+
+    /* 右側聊天視窗 */
+    .chat-main { flex: 1; display: flex; flex-direction: column; background: white; }
+    .chat-header {
+        padding: 10px 16px; border-bottom: 1px solid var(--divider);
+        display: flex; align-items: center; font-weight: 600;
+    }
+    .message-area { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+
+    /* 對話氣泡 */
+    .bubble { max-width: 60%; padding: 8px 12px; border-radius: 18px; font-size: 15px; position: relative; }
+    .bubble.received { background: #E4E6EB; align-self: flex-start; }
+    .bubble.sent { background: var(--fb-blue); color: white; align-self: flex-end; }
+
+    /* 輸入框 */
+    .input-area { padding: 16px; display: flex; align-items: center; gap: 10px; }
+    .message-input {
+        flex: 1; background: var(--bg-color); border: none;
+        border-radius: 20px; padding: 10px 15px; outline: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="messenger-container">
+    <div class="chat-sidebar">
+        <div class="sidebar-header">聊天</div>
+        <div class="chat-list">
+            {% for room in rooms %}
+                {% with other_user=room.participants.all|dictsort:"name" %}
+                <div class="chat-item {% if room == active_room %}active{% endif %}">
+                    <img src="{{ room.participants.all.1.avatar.url }}" class="chat-avatar">
+                    <div>
+                        <div style="font-weight: 600;">
+                            {% for p in room.participants.all %}{% if p != profile %}{{ p.name }}{% endif %}{% endfor %}
+                        </div>
+                        <div style="font-size: 13px; color: var(--text-sec);">
+                            {{ room.messages.last.content|truncatechars:20 }}
+                        </div>
+                    </div>
+                </div>
+                {% endwith %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="chat-main">
+        {% if active_room %}
+            <div class="chat-header">
+                <div style="font-size: 17px;">
+                    {% for p in active_room.participants.all %}{% if p != profile %}{{ p.name }}{% endif %}{% endfor %}
+                </div>
+            </div>
+
+            <div class="message-area">
+                {% for msg in messages %}
+                    <div class="bubble {% if msg.sender == profile %}sent{% else %}received{% endif %}">
+                        {{ msg.content }}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="input-area">
+                <i class="fas fa-plus-circle" style="color: var(--fb-blue);"></i>
+                <input type="text" class="message-input" placeholder="Aa">
+                <i class="fas fa-thumbs-up" style="color: var(--fb-blue);"></i>
+            </div>
+        {% else %}
+            <div style="display:flex; align-items:center; justify-content:center; height:100%; color:var(--text-sec);">
+                點擊好友開始聊天
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

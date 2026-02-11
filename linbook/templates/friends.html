@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}朋友 | {{ profile.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* 朋友頁是單欄寬版 */
+    .main-container { max-width: 940px; margin: 20px auto; display: block; padding: 0 16px; }
+    
+    .friends-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-top: 10px; }
+    .friend-card { border: 1px solid #CED0D4; border-radius: 8px; padding: 16px; display: flex; align-items: center; }
+    .friend-card img { width: 80px; height: 80px; border-radius: 8px; object-fit: cover; margin-right: 15px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-container">
+    <div class="fb-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h2 style="margin:0; font-size:20px; font-weight:700;">朋友</h2>
+        </div>
+        
+        <div class="friends-grid">
+            {% for friend in friends %}
+            <div class="friend-card">
+                <img src="{{ friend.avatar.url }}">
+                <div style="flex:1;">
+                    <div style="font-weight:600; font-size:17px;">{{ friend.name }}</div>
+                    <div style="color:#65676B; font-size:13px;">{{ friend.description }}</div>
+                </div>
+                <button class="btn-gray" style="font-size:13px;">朋友</button>
+            </div>
+            {% empty %}
+            <p>尚無朋友資料。</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
