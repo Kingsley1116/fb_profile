@@ -28,3 +28,4 @@ urlpatterns = [
 # 關鍵：在開發階段讓 Django 能讀取並顯示你上傳的圖片
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    # urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

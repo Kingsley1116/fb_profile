@@ -1,15 +1,21 @@
 from django.contrib import admin
-from .models import Profile, Post, Friend, Photo, Video, ChatMessage, Chatroom
+from .models import Profile, Post, Friend, Photo, Video, ChatMessage, Chatroom, Comment
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
     list_display = ('name', 'title') # 在列表顯示姓名和職稱
 
+
+class CommentInline(admin.TabularInline):
+    model = Comment
+    extra = 1 # 預設顯示一個空白的留言輸入框
+    
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     list_display = ('content_summary', 'created_at') # 顯示貼文摘要和時間
     list_filter = ('created_at',) # 右側可以按時間篩選
     search_fields = ('content',) # 讓你可以搜尋貼文內容
+    inlines = [CommentInline] # 將留言內嵌進貼文的編輯頁面
 
     def content_summary(self, obj):
         return obj.content[:30] + "..." # 只顯示前 30 個字

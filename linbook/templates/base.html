@@ -147,7 +147,8 @@
         <div><i class="fas fa-bars"></i></div>
         <div><i class="fab fa-facebook-messenger"></i></div>
         <div><i class="fas fa-bell"></i></div>
-        <img src="{% if user.is_staff and profile.avatar %}{{ profile.avatar.url }}{% else %}media/friends/default_avatar.png{% endif %}"
+        {% load static %}
+        <img src="{% if user.is_staff and profile.avatar %}{{ profile.avatar.url }}{% else %}{% static 'default_avatar.png' %}{% endif %}"
           style="width: 40px; height: 40px; border-radius: 50%; margin-left: 8px; object-fit: cover;"/>
       </div>
 
@@ -188,7 +189,7 @@
           </div>
           <div class="name-section">
             <h1 class="user-name">{{ profile.name }}</h1>
-            <p class="friends-count">{{ friends_amount }} 位朋友</p>
+            <p class="friends-count">{{ friends_amount|default:"0" }} 位朋友</p>
           </div>
           <div class="action-buttons">
             <button class="btn-gray">

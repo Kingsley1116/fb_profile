@@ -3,11 +3,14 @@ from django.contrib.auth.models import User
 
 # 個人資料（FB 的 Header 部分）
 class Profile(models.Model):
-    name = models.CharField(max_length=100, default="林則徐")
-    title = models.CharField(max_length=100, default="晚清政治家、思想家")
+    name = models.CharField(max_length=100)
+    title = models.CharField(max_length=100)
     bio = models.TextField()
     avatar = models.ImageField(upload_to='profile/')
     cover_photo = models.ImageField(upload_to='profile/')
+
+    def __str__(self):
+        return self.name
 
 
 # 貼文（FB 的 Timeline 部分）
@@ -15,20 +18,35 @@ class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
     image = models.ImageField(upload_to='posts/', blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    likes_count = models.IntegerField(default=0) # 僅顯示數字，無實際功能
-    comments_count = models.IntegerField(default=0) # 僅顯示數字，無實際功能
-    shares_count = models.IntegerField(default=0) # 僅顯示數字，無實際功能
+    created_at = models.DateTimeField(verbose_name="發帖時間")
+    likes_count = models.IntegerField(default=0)
+    comments_count = models.IntegerField(default=0)
+    shares_count = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{self.content[:20]}..."
     
 
+# 留言
+class Comment(models.Model):
+    # 這則留言屬於哪篇貼文
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
+    author = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='comments_made', verbose_name="留言者")
+    content = models.TextField(verbose_name="留言內容")
+    created_at = models.DateTimeField(verbose_name="留言時間")
+
+    class Meta:
+        ordering = ['created_at']
+
+    def __str__(self):
+        return f"{self.author.name} 的留言"
+
+
 # 朋友
 class Friend(models.Model):
     name = models.CharField(max_length=100)
     avatar = models.ImageField(upload_to='friends/', default='friends/default_avatar.png', blank=True, null=True)
-    description = models.CharField(max_length=100, default="朝廷同僚") # 例如：軍機大臣、甚至"道光帝"
+    description = models.CharField(max_length=100, default="朝廷同僚")
     
     def __str__(self):
         return self.name
@@ -37,7 +55,7 @@ class Friend(models.Model):
 # 相片
 class Photo(models.Model):
     image = models.ImageField(upload_to='photos/')
-    caption = models.CharField(max_length=200, blank=True) # 照片描述
+    caption = models.CharField(max_length=200, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

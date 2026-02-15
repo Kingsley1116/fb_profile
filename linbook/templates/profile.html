@@ -143,6 +143,35 @@
                 <button class="footer-btn"><i class="far fa-comment-alt"></i> 留言</button>
                 <button class="footer-btn"><i class="fas fa-share"></i> 分享</button>
             </div>
+
+            {% if post.comments.exists %}
+            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--divider);">
+                {% for comment in post.comments.all %}
+                <div style="display: flex; margin-bottom: 10px;">
+                    {% if comment.author.avatar %}
+                        <img src="{{ comment.author.avatar.url }}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; margin-right: 8px;">
+                    {% else %}
+                        <div style="width: 32px; height: 32px; border-radius: 50%; background: #ccc; display: flex; align-items: center; justify-content: center; margin-right: 8px; font-weight: bold; color: white;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    {% endif %}
+                    
+                    <div>
+                        <div style="background: var(--bg-color); padding: 8px 12px; border-radius: 18px; display: inline-block; max-width: 100%;">
+                            <div style="font-weight: 600; font-size: 13px; color: var(--text-main);">{{ comment.author.name }}</div>
+                            <div style="font-size: 14px; color: var(--text-main); word-break: break-word; margin-top: 2px;">{{ comment.content }}</div>
+                        </div>
+                        <div style="font-size: 12px; color: var(--text-sec); margin-left: 12px; margin-top: 2px; font-weight: 600;">
+                            <span style="cursor: pointer; margin-right: 10px;">讚</span>
+                            <span style="cursor: pointer; margin-right: 10px;">回覆</span>
+                            <span style="font-weight: normal;">{{ comment.created_at|timesince }}前</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
         </div>
         {% empty %}
         <div class="fb-card" style="text-align:center; padding:40px;">
