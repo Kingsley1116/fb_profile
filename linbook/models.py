@@ -5,21 +5,23 @@ from django.contrib.auth.models import User
 class Profile(models.Model):
     name = models.CharField(max_length=100)
     title = models.CharField(max_length=100)
-    bio = models.TextField()
+    bio = models.TextField(null=True, blank=True, verbose_name="個人介紹（選填）")
     avatar = models.ImageField(upload_to='profile/')
     cover_photo = models.ImageField(upload_to='profile/')
 
     # 工作與學歷
-    company = models.CharField(max_length=100, default="大清朝廷")
-    school = models.CharField(max_length=100, default="嘉慶進士")
+    company = models.CharField(max_length=100, null=True, blank=True)
+    school = models.CharField(max_length=100, null=True, blank=True)
     # 居住地
-    current_city = models.CharField(max_length=100, default="福建省侯官縣")
-    hometown = models.CharField(max_length=100, default="福建福州")
+    current_city = models.CharField(max_length=100, null=True, blank=True)
+    hometown = models.CharField(max_length=100, null=True, blank=True)
     # 基本資料
-    gender = models.CharField(max_length=10, default="男")
-    birthday = models.CharField(max_length=50, default="1785年8月30日")
+    gender = models.CharField(max_length=10, null=True, blank=True)
+    birthday = models.CharField(max_length=50, null=True, blank=True)
     # 感情狀況
-    relationship_status = models.CharField(max_length=50, default="已婚")
+    relationship_status = models.CharField(max_length=50, null=True, blank=True)
+
+    friends = models.ManyToManyField("self", blank=True, symmetrical=True)
 
     def __str__(self):
         return self.name
@@ -30,7 +32,7 @@ class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
     image = models.ImageField(upload_to='posts/', blank=True, null=True)
-    created_at = models.DateTimeField(verbose_name="發帖時間")
+    created_at = models.TextField(verbose_name="發帖時間")
     likes_count = models.IntegerField(default=0)
     # comments_count = models.IntegerField(default=0)
     shares_count = models.IntegerField(default=0)
@@ -49,23 +51,13 @@ class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
     author = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='comments_made', verbose_name="留言者")
     content = models.TextField(verbose_name="留言內容")
-    created_at = models.DateTimeField(verbose_name="留言時間")
+    created_at = models.TextField(verbose_name="留言時間")
 
     class Meta:
         ordering = ['created_at']
 
     def __str__(self):
         return f"{self.author.name} 的留言"
-
-
-# 朋友
-class Friend(models.Model):
-    name = models.CharField(max_length=100)
-    avatar = models.ImageField(upload_to='friends/', default='friends/default_avatar.png', blank=True, null=True)
-    description = models.CharField(max_length=100, default="朝廷同僚")
-    
-    def __str__(self):
-        return self.name
 
 
 # 相片

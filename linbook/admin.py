@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Profile, Post, Friend, Photo, Video, ChatMessage, Chatroom, Comment, LifeEvent
+from .models import Profile, Post, Photo, Video, ChatMessage, Chatroom, Comment, LifeEvent
 
 class LifeEventInline(admin.TabularInline):
     model = LifeEvent
@@ -25,10 +25,6 @@ class PostAdmin(admin.ModelAdmin):
         return obj.content[:30] + "..." # 只顯示前 30 個字
     content_summary.short_description = '貼文內容'
 
-
-@admin.register(Friend)
-class FriendAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description')
 
 @admin.register(Photo)
 class PhotoAdmin(admin.ModelAdmin):
