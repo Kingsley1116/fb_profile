@@ -64,5 +64,6 @@ def fb_messages(request, room_id=None):
         'rooms': rooms,
         'active_room': active_room,
         'messages': messages,
-        'active_tab': 'messages'
+        'active_tab': 'messages',
+        'friends_amount': Friend.objects.count(),
     })

@@ -145,7 +145,11 @@
 
       <div class="nav-icons" style="">
         <div><i class="fas fa-bars"></i></div>
-        <div><i class="fab fa-facebook-messenger"></i></div>
+        <div>
+          <a href="{% url 'linbook:messages' %}">
+            <i class="fab fa-facebook-messenger"></i>
+          </a>
+        </div>
         <div><i class="fas fa-bell"></i></div>
         {% load static %}
         <img src="{% if user.is_staff and profile.avatar %}{{ profile.avatar.url }}{% else %}{% static 'default_avatar.png' %}{% endif %}"
@@ -192,10 +196,10 @@
             <p class="friends-count">{{ friends_amount|default:"0" }} 位朋友</p>
           </div>
           <div class="action-buttons">
-            <button class="btn-gray">
+            <a class="btn-gray" href="{% url 'linbook:messages' %}">
               <i class="fab fa-facebook-messenger" style="margin-right: 5px"></i>
               傳送訊息
-            </button>
+            </a>
           </div>
         </div>
 
