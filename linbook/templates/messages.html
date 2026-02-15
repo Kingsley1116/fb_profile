@@ -46,6 +46,21 @@
         flex: 1; background: var(--bg-color); border: none;
         border-radius: 20px; padding: 10px 15px; outline: none;
     }
+
+    /* 收到的訊息包裝容器，用來排版頭像+內容 */
+    .received-container {
+        display: flex;
+        align-self: flex-start;
+        gap: 8px;
+        margin-bottom: 12px;
+        max-width: 80%;
+    }
+    .sender-avatar { width: 28px; height: 28px; border-radius: 50%; align-self: flex-end; }
+    .message-content-wrapper { display: flex; flex-direction: column; }
+    .sender-name { font-size: 11px; color: var(--text-sec); margin-left: 4px; margin-bottom: 2px; }
+    
+    /* 點擊左側項目的連結樣式 */
+    .chat-link { text-decoration: none; color: inherit; display: block; }
 </style>
 {% endblock %}
 
@@ -53,38 +68,45 @@
 <div class="messenger-container">
     <div class="chat-sidebar">
         <div class="sidebar-header">聊天</div>
+
         <div class="chat-list">
             {% for room in rooms %}
-                {% with other_user=room.participants.all|dictsort:"name" %}
-                <div class="chat-item {% if room == active_room %}active{% endif %}">
-                    <img src="{{ room.participants.all.1.avatar.url }}" class="chat-avatar">
-                    <div>
-                        <div style="font-weight: 600;">
-                            {% for p in room.participants.all %}{% if p != profile %}{{ p.name }}{% endif %}{% endfor %}
-                        </div>
-                        <div style="font-size: 13px; color: var(--text-sec);">
-                            {{ room.messages.last.content|truncatechars:20 }}
+                <a href="{% url 'linbook:messages_with_id' room.id %}" class="chat-link">
+                    <div class="chat-item {% if room == active_room %}active{% endif %}">
+                        <img src="{{ room.participants.all.0.avatar.url }}" class="chat-avatar">
+                        <div>
+                            <div style="font-weight: 600;">
+                                {% for p in room.participants.all %}{% if p != profile %}{{ p.name }}{% if not forloop.last %}、{% endif %}{% endif %}{% endfor %}
+                            </div>
                         </div>
                     </div>
-                </div>
-                {% endwith %}
+                </a>
             {% endfor %}
         </div>
+
     </div>
 
     <div class="chat-main">
         {% if active_room %}
             <div class="chat-header">
                 <div style="font-size: 17px;">
-                    {% for p in active_room.participants.all %}{% if p != profile %}{{ p.name }}{% endif %}{% endfor %}
+                    {% for p in active_room.participants.all %}{% if p != profile %}{{ p.name }}{% if not forloop.last %}、{% endif %}{% endif %}{% endfor %}
                 </div>
             </div>
 
             <div class="message-area">
                 {% for msg in messages %}
-                    <div class="bubble {% if msg.sender == profile %}sent{% else %}received{% endif %}">
-                        {{ msg.content }}
-                    </div>
+                    {% if msg.sender == profile %}
+                        <div class="bubble sent">{{ msg.content }}</div>
+                    {% else %}
+                        <div class="received-container">
+                            <img src="{{ msg.sender.avatar.url }}" class="sender-avatar" title="{{ msg.sender.name }}">
+                            <div class="message-content-wrapper">
+                                <span class="sender-name">{{ msg.sender.name }}</span>
+                                <div class="bubble received">{{ msg.content }}</div>
+                            </div>
+                        </div>
+                    {% endif %}
                 {% endfor %}
             </div>
 

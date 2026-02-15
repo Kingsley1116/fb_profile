@@ -47,13 +47,16 @@ def fb_about(request):
         'active_tab': 'about'
     })
 
-def fb_messages(request):
-    profile = Profile.objects.first() # 假設目前是林則徐
-    # 獲取林則徐參與的所有聊天室
-    rooms = Chatroom.objects.filter(participants=profile)
+def fb_messages(request, room_id=None):
+    profile = Profile.objects.first() 
+    rooms = Chatroom.objects.all()
     
-    # 預設顯示第一個聊天室的內容
-    active_room = rooms.first()
+    # 如果有傳入 room_id，就抓那一間；否則抓第一間
+    if room_id:
+        active_room = Chatroom.objects.get(id=room_id)
+    else:
+        active_room = rooms.first()
+        
     messages = active_room.messages.all() if active_room else []
     
     return render(request, 'messages.html', {
@@ -61,5 +64,5 @@ def fb_messages(request):
         'rooms': rooms,
         'active_room': active_room,
         'messages': messages,
-        'active_tab': 'messages' # 讓導航列知道目前在訊息頁
+        'active_tab': 'messages'
     })

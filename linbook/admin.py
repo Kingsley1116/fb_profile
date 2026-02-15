@@ -1,10 +1,14 @@
 from django.contrib import admin
-from .models import Profile, Post, Friend, Photo, Video, ChatMessage, Chatroom, Comment
+from .models import Profile, Post, Friend, Photo, Video, ChatMessage, Chatroom, Comment, LifeEvent
+
+class LifeEventInline(admin.TabularInline):
+    model = LifeEvent
+    extra = 1
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
     list_display = ('name', 'title') # 在列表顯示姓名和職稱
-
+    inlines = [LifeEventInline]
 
 class CommentInline(admin.TabularInline):
     model = Comment

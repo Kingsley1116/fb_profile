@@ -4,142 +4,116 @@
 
 {% block extra_css %}
 <style>
-    .main-container {
-        max-width: 940px; margin: 20px auto;
-        padding: 0 16px;
-    }
+    .main-container { max-width: 940px; margin: 20px auto; padding: 0 16px; }
+    .about-card { background: var(--card-bg); border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); display: flex; min-height: 500px; }
 
-    /* 關於頁面的大卡片佈局 */
-    .about-card {
-        background: var(--card-bg);
-        border-radius: 8px;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-        display: flex; /* 左右排布 */
-        min-height: 400px;
-        overflow: hidden;
-    }
+    /* 左側選單 */
+    .about-sidebar { width: 300px; border-right: 1px solid var(--divider); padding: 16px 0; }
+    .side-item { padding: 10px 16px; font-weight: 600; color: var(--text-sec); cursor: pointer; transition: 0.2s; }
+    .side-item.active { color: var(--fb-blue); background-color: #E7F3FF; border-radius: 0 20px 20px 0; margin-right: 8px; }
 
-    /* 左側次選單 */
-    .about-sidebar {
-        width: 300px;
-        border-right: 1px solid var(--divider);
-        padding: 16px 0;
-    }
-    .about-sidebar h3 {
-        padding: 0 16px;
-        font-size: 20px;
-        font-weight: 700;
-        margin-bottom: 12px;
-    }
-    .side-item {
-        padding: 10px 16px;
-        font-weight: 600;
-        color: var(--text-sec);
-        cursor: pointer;
-    }
-    .side-item.active {
-        color: var(--fb-blue);
-        background-color: #E7F3FF;
-        border-radius: 0 20px 20px 0;
-        margin-right: 8px;
-    }
-    .side-item:hover:not(.active) {
-        background-color: var(--bg-color);
-    }
+    /* 右側內容 */
+    .about-content { flex: 1; padding: 20px 32px; }
+    .content-section { display: none; } /* 預設全部隱藏 */
+    .content-section.active { display: block; } /* 只有啟動的顯示 */
 
-    /* 右側內容區 */
-    .about-content {
-        flex: 1;
-        padding: 20px 32px;
-    }
-    .info-section {
-        margin-bottom: 24px;
-    }
-    .info-row {
-        display: flex;
-        align-items: center;
-        margin-bottom: 20px;
-    }
-    .info-row i {
-        width: 40px;
-        height: 40px;
-        font-size: 20px;
-        color: #8C939D;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-right: 12px;
-    }
-    .info-text h4 {
-        margin: 0;
-        font-size: 15px;
-        font-weight: normal;
-    }
-    .info-text strong {
-        color: var(--text-main);
-    }
+    .info-row { display: flex; align-items: center; margin-bottom: 20px; }
+    .info-row i { width: 40px; font-size: 20px; color: #8C939D; margin-right: 12px; text-align: center; }
+    .info-label { color: var(--text-sec); font-size: 13px; margin-bottom: 2px; }
 </style>
-{% endblock extra_css %}
+{% endblock %}
 
 {% block content %}
 <div class="main-container">
     <div class="about-card">
         <div class="about-sidebar">
-            <h3>關於</h3>
-            <div class="side-item active">概覽</div>
-            <div class="side-item">工作與學歷</div>
-            <div class="side-item">居住過的地方</div>
-            <div class="side-item">聯絡資訊和基本資料</div>
-            <div class="side-item">家庭與感情狀況</div>
-            <div class="side-item">有關你的詳細資料</div>
-            <div class="side-item">人生大事</div>
+            <h3 style="padding: 0 16px;">關於</h3>
+            <div class="side-item active" data-target="overview">概覽</div>
+            <div class="side-item" data-target="work-edu">工作與學歷</div>
+            <div class="side-item" data-target="places">居住過的地方</div>
+            <div class="side-item" data-target="contact">聯絡資訊和基本資料</div>
+            <div class="side-item" data-target="family">家庭與感情狀況</div>
+            <div class="side-item" data-target="details">有關你的詳細資料</div>
+            <div class="side-item" data-target="life-events">人生大事</div>
         </div>
 
         <div class="about-content">
-            <div class="info-section">
-                <div class="info-row">
-                    <i class="fas fa-briefcase"></i>
-                    <div class="info-text">
-                        <h4>任職於 <strong>大清帝國</strong></h4>
-                    </div>
-                </div>
-
-                <div class="info-row">
-                    <i class="fas fa-graduation-cap"></i>
-                    <div class="info-text">
-                        <h4>曾就讀 <strong>嘉慶進士 (嘉慶十六年)</strong></h4>
-                    </div>
-                </div>
-
-                <div class="info-row">
-                    <i class="fas fa-home"></i>
-                    <div class="info-text">
-                        <h4>現居 <strong>福建省侯官縣</strong></h4>
-                    </div>
-                </div>
-
-                <div class="info-row">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <div class="info-text">
-                        <h4>家鄉 <strong>福州</strong></h4>
-                    </div>
-                </div>
-
-                <div class="info-row">
-                    <i class="fas fa-heart"></i>
-                    <div class="info-text">
-                        <h4>感情狀態：<strong>已婚</strong></h4>
-                    </div>
-                </div>
-
-                <hr style="border:0; border-top: 1px solid var(--divider); margin: 20px 0;">
-
-                <div class="info-section">
-                    <h4 style="color: var(--text-sec); margin-bottom: 10px;">詳細資料</h4>
-                    <p style="line-height: 1.6;">{{ profile.bio }}</p>
-                </div>
+            
+            <div id="overview" class="content-section active">
+                <h4 style="margin-bottom:20px;">概覽</h4>
+                <div class="info-row"><i class="fas fa-briefcase"></i> <span>任職於 <strong>{{ profile.company }}</strong></span></div>
+                <div class="info-row"><i class="fas fa-graduation-cap"></i> <span>曾就讀 <strong>{{ profile.school }}</strong></span></div>
+                <div class="info-row"><i class="fas fa-home"></i> <span>現居 <strong>{{ profile.current_city }}</strong></span></div>
+                <div class="info-row"><i class="fas fa-heart"></i> <span><strong>{{ profile.relationship_status }}</strong></span></div>
             </div>
+
+            <div id="work-edu" class="content-section">
+                <h4>工作經歷</h4>
+                <div class="info-row"><i class="fas fa-briefcase"></i> <span><strong>{{ profile.company }}</strong><br><span class="info-label">欽差大臣 · 1838年至今</span></span></div>
+                <hr>
+                <h4>學歷</h4>
+                <div class="info-row"><i class="fas fa-graduation-cap"></i> <span><strong>{{ profile.school }}</strong><br><span class="info-label">嘉慶十六年二甲第四名進士</span></span></div>
+            </div>
+
+            <div id="places" class="content-section">
+                <h4>居住過的地方</h4>
+                <div class="info-row"><i class="fas fa-map-marker-alt"></i> <span><strong>{{ profile.current_city }}</strong><br><span class="info-label">現居地</span></span></div>
+                <div class="info-row"><i class="fas fa-home"></i> <span><strong>{{ profile.hometown }}</strong><br><span class="info-label">家鄉</span></span></div>
+            </div>
+
+            <div id="contact" class="content-section">
+                <h4>基本資料</h4>
+                <div class="info-row"><i class="fas fa-birthday-cake"></i> <span>{{ profile.birthday }}<br><span class="info-label">生日</span></span></div>
+                <div class="info-row"><i class="fas fa-user"></i> <span>{{ profile.gender }}<br><span class="info-label">性別</span></span></div>
+            </div>
+
+            <div id="family" class="content-section">
+                <h4>感情狀況</h4>
+                <div class="info-row"><i class="fas fa-heart"></i> <span>{{ profile.relationship_status }}</span></div>
+            </div>
+
+            <div id="details" class="content-section">
+                <h4>詳細資料</h4>
+                <p style="line-height: 1.6;">{{ profile.bio }}</p>
+                <hr>
+                <h4 style="font-size: 14px; color: var(--text-sec);">最愛的座右銘</h4>
+                <p style="font-style: italic; font-size: 18px;">「苟利國家生死以，豈因禍福避趨之。」</p>
+            </div>
+
+            <div id="life-events" class="content-section">
+                <h4>人生大事</h4>
+                {% for event in profile.life_events.all %}
+                <div class="info-row">
+                    <i class="fas fa-star" style="color: #f7b928;"></i>
+                    <span><strong>{{ event.year }}</strong>：{{ event.title }}<br><span class="info-label">{{ event.description }}</span></span>
+                </div>
+                {% empty %}
+                <p>目前沒有紀錄。</p>
+                {% endfor %}
+            </div>
+
         </div>
     </div>
 </div>
-{% endblock content %}
+
+<script>
+    // 取得所有選單按鈕與內容區塊
+    const sideItems = document.querySelectorAll('.side-item');
+    const sections = document.querySelectorAll('.content-section');
+
+    sideItems.forEach(item => {
+        item.addEventListener('click', () => {
+            // 1. 移除所有按鈕的 active 狀態
+            sideItems.forEach(i => i.classList.remove('active'));
+            // 2. 隱藏所有內容區塊
+            sections.forEach(s => s.classList.remove('active'));
+
+            // 3. 為點擊的按鈕加上 active
+            item.classList.add('active');
+            // 4. 根據 data-target 顯示對應內容
+            const targetId = item.getAttribute('data-target');
+            document.getElementById(targetId).classList.add('active');
+        });
+    });
+</script>
+{% endblock %}

@@ -9,6 +9,18 @@ class Profile(models.Model):
     avatar = models.ImageField(upload_to='profile/')
     cover_photo = models.ImageField(upload_to='profile/')
 
+    # 工作與學歷
+    company = models.CharField(max_length=100, default="大清朝廷")
+    school = models.CharField(max_length=100, default="嘉慶進士")
+    # 居住地
+    current_city = models.CharField(max_length=100, default="福建省侯官縣")
+    hometown = models.CharField(max_length=100, default="福建福州")
+    # 基本資料
+    gender = models.CharField(max_length=10, default="男")
+    birthday = models.CharField(max_length=50, default="1785年8月30日")
+    # 感情狀況
+    relationship_status = models.CharField(max_length=50, default="已婚")
+
     def __str__(self):
         return self.name
 
@@ -20,11 +32,15 @@ class Post(models.Model):
     image = models.ImageField(upload_to='posts/', blank=True, null=True)
     created_at = models.DateTimeField(verbose_name="發帖時間")
     likes_count = models.IntegerField(default=0)
-    comments_count = models.IntegerField(default=0)
+    # comments_count = models.IntegerField(default=0)
     shares_count = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{self.content[:20]}..."
+    
+    @property
+    def comments_count(self):
+        return self.comments.count()
     
 
 # 留言
@@ -97,3 +113,13 @@ class ChatMessage(models.Model):
 
     def __str__(self):
         return f"{self.sender.name}: {self.content[:20]}"
+    
+
+class LifeEvent(models.Model):
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='life_events')
+    title = models.CharField(max_length=200)
+    year = models.CharField(max_length=20) # 例如: 1839年
+    description = models.TextField(blank=True)
+
+    class Meta:
+        verbose_name = "人生大事"
