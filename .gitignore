@@ -3,3 +3,5 @@
 media/*
 *.sqlite3
 .env
+venv/
+staticfiles/admin/
