@@ -3,7 +3,7 @@ from .models import Profile, Post, Photo, Video, Chatroom
 
 def fb_profile(request):
     profile = Profile.objects.first()
-    posts = Post.objects.all().order_by('-created_at')
+    posts = Post.objects.all().order_by('-id')
     friends = profile.friends.all()[:9]
     photos = Photo.objects.all()[:9]
     

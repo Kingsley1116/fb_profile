@@ -124,7 +124,7 @@
                 </div>
             </div>
             
-            <div class="post-content">{{ post.content }}</div>
+            <div class="post-content">{{ post.content|safe }}</div>
             
             {% if post.image %}
                 <img src="{{ post.image.url }}" class="post-image">
